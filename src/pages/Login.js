@@ -11,22 +11,37 @@ class Login extends React.Component {
     this.state = {
       email: '',
       password: '',
+      validateButton: true,
     };
   }
 
   handleChange = ({ target }) => {
     const { name, value } = target;
-    this.setState({ [name]: value });
+    this.setState({ [name]: value },
+      () => this.handleValidation());
+    /* toda vez que houver mudança de estado na linha 20 será rodada handleVlaidation */
+  }
+
+  handleValidation = () => {
+    const { email, password } = this.state;
+    const numberSix = 6;
+    const emailConfirmation = email.match(/\S+@\S+\.\S+/);
+    const passwordValidation = password.length;
+    if (emailConfirmation && passwordValidation >= numberSix) {
+      this.setState({ validateButton: false });
+    } else {
+      this.setState({ validateButton: true });
+    }
   }
 
   render() {
-    const { email, password } = this.state;
+    const { email, password, validateButton } = this.state;
     const { dispatchState } = this.props;
-    const numberSix = 6;
     return (
       <>
         <input
           name="email"
+          value={ email }
           onChange={ this.handleChange }
           type="text"
           data-testid="email-input"
@@ -34,6 +49,7 @@ class Login extends React.Component {
         />
         <input
           name="password"
+          value={ password }
           onChange={ this.handleChange }
           type="password"
           data-testid="password-input"
@@ -41,8 +57,7 @@ class Login extends React.Component {
         />
         <Link to="/carteira">
           <button
-            disabled={ !(email
-              .includes('@email.com') && password.length >= numberSix) }
+            disabled={ validateButton }
             onClick={ () => dispatchState(email) }
             type="button"
           >

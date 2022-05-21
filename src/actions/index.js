@@ -21,8 +21,7 @@ export const exchangeRequest = () => ({
 
 export const exchangeApproved = (exchangeApi) => ({
   type: EXCHANGE_SUCCESS,
-  data: Object.keys(exchangeApi).filter((element) => element !== 'USDT'),
-  dataComplete: exchangeApi,
+  data: exchangeApi,
 });
 
 export const exchangeDisapproved = (error) => ({
@@ -35,8 +34,9 @@ export function fetchExchangeApi() {
     dispatch(exchangeRequest());
     try {
       const request = await exchangeData();
-      dispatch(exchangeApproved(Object.keys(request)
-        .filter((element) => element !== 'USDT')));
+      const currenciesValues = Object.keys(request)
+        .filter((element) => element !== 'USDT');
+      dispatch(exchangeApproved(currenciesValues));
     } catch (error) {
       dispatch(exchangeDisapproved(error));
     }
